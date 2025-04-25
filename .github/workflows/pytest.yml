@@ -1,0 +1,47 @@
+name: CI Django - Tests & Analyse
+
+on:
+  push:
+    branches: [ lincoln ]
+  pull_request:
+    branches: [ lincoln ]
+
+jobs:
+  test-and-analyse:
+    name: CI - Tests et Analyse
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pylint bandit pytest
+
+      - name: Run unit tests
+        run: |
+          echo "==== UNIT TESTS ===="
+          pytest unit_tests
+
+      - name: Run integration tests
+        run: |
+          echo "==== INTEGRATION TESTS ===="
+          pytest integration_tests
+
+      - name: Analyse Pylint (avec règles désactivées)
+        run: |
+          echo "==== PYLINT ===="
+          pylint lincoln --fail-under=7 --disable=C,R0801 --ignore=unit_tests,integration_tests
+
+      - name: Analyse Bandit (SAST)
+        run: |
+          echo "==== BANDIT ===="
+          bandit -r lincoln -x unit_tests,integration_tests
