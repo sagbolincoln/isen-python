@@ -48,3 +48,8 @@ def markFavourtie(request, id):
         favourite_obj.save(update_fields=['is_favourite'])
     return JsonResponse({'success': True, 'marked': favourite_obj.is_favourite})
     # JsonResponse({'success': False})
+
+from django.shortcuts import render
+
+def panier(request):
+    return render(request, 'panier.html')

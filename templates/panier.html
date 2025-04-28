@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<header class="masthead bg-primary text-white text-center">
+  <div class="container d-flex align-items-center flex-column">
+    <!-- Masthead Avatar Image -->
+    <img class="masthead-avatar mb-5" src="assets/img/avataaars.svg" alt="" />
+    
+    <!-- Masthead Heading -->
+    <h1 class="masthead-heading mb-0">MON PANIER 🛒</h1>
+
+    <!-- Icon Divider -->
+    <div class="divider-custom divider-light">
+      <div class="divider-custom-line"></div>
+      <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+      <div class="divider-custom-line"></div>
+    </div>
+
+    <!-- Affichage du panier -->
+    <div id="contenu-panier">
+      <h2>Chargement du panier...</h2>
+    </div>
+
+  </div>
+</header>
+
+<script>
+  // Fonction pour récupérer le panier depuis le localStorage
+  function getPanier() {
+    let panier = localStorage.getItem('panier');
+    return panier ? JSON.parse(panier) : [];
+  }
+
+  // Fonction pour afficher le panier
+  function afficherPanier() {
+    let panier = getPanier();
+    let contenu = "";
+
+    if (panier.length === 0) {
+      contenu = "<h2>Votre panier est vide.</h2>";
+    } else {
+      contenu = `
+        <table class="table table-hover" style="color: white; font-size: 18px;">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Nom</th>
+              <th scope="col">Prix</th>
+              <th scope="col">Image</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      panier.forEach((produit, index) => {
+        contenu += `
+          <tr>
+            <th scope="row">${index + 1}</th>
+            <td>${produit.name}</td>
+            <td>$${produit.price}</td>
+            <td><img class="img-fluid" src="${produit.image}" style="width: 60px;"></td>
+          </tr>
+        `;
+      });
+
+      contenu += `
+          </tbody>
+        </table>
+      `;
+    }
+
+    document.getElementById('contenu-panier').innerHTML = contenu;
+  }
+
+  // Chargement automatique du panier quand la page arrive
+  document.addEventListener('DOMContentLoaded', afficherPanier);
+</script>
+{% endblock %}
