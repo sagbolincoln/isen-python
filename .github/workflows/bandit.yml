@@ -1,28 +1,30 @@
-name: CI Pipeline
+name: Analyse de sécurité avec Bandit
 
 on:
   push:
     branches: [ main, lincoln ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, lincoln ]
 
 jobs:
-  sast-bandit:
-    name: Analyse SAST avec Bandit
+  bandit-sast:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout du code
-        uses: actions/checkout@v3
+    - name: Récupérer le code
+      uses: actions/checkout@v4
 
-      - name: Configuration de Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+    - name: Installer Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
 
-      - name: Installer Bandit
-        run: pip install bandit
+    - name: Installer Bandit
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit
 
-      - name: Lancer Bandit en excluant les tests
-        run: |
-          bandit -r . -x unit_tests,integration_tests
+    - name: Lancer l'analyse de sécurité
+      run: |
+        echo "==== Analyse Bandit ===="
+        bandit -r lincoln/ -x unit_tests/,integration_tests/ -ll

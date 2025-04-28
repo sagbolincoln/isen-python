@@ -1,13 +1,13 @@
-name: Lint Dockerfile
+name: Dockerfile Lint avec Hadolint
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, lincoln ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, lincoln ]
 
 jobs:
-  hadolint:
+  dockerfile-lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
