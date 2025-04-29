@@ -1,7 +1,6 @@
 name: 🔍 DAST OWASP ZAP Baseline
 
 on:
-    
   push:
     branches: [ main, lincoln ]
   pull_request:
@@ -42,7 +41,7 @@ jobs:
 
       - name: Upload ZAP report
         if: always()
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v3.1.2  # ← Pin sur une version existante
         with:
           name: zap-baseline-report
           path: zap_report.json               # ← Doit correspondre à reportFileName
