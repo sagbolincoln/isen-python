@@ -86,6 +86,11 @@
             />
             <h6 style="text-align: center">$ {{ product.price }}</h6>
           </div>
+          <div style="text-align: center; margin-top: 10px;">
+            <button onclick="ajouterAuPanier('{{ product.id }}', '{{ product.name|escapejs }}', '{{ product.price|escapejs }}', '{{ product.image.url }}')" class="btn btn-success">
+              Ajouter au panier 🛒
+            </button>
+          </div>
         </div>
         {% endfor %}
       </div>
@@ -137,6 +142,14 @@
                 <p class="mb-3">{{ product.description}}</p>
                 <h6>Price</h6>
                 <p class="mb-1">$ {{ product.price}}</p>
+                
+                <div style="text-align: center; margin-top: 10px;">
+                  <button onclick="ajouterAuPanier('{{ product.id }}', '{{ product.name|escapejs }}', '{{ product.price|escapejs }}', '{{ product.image.url }}')" class="btn btn-success">
+                    Ajouter au panier 🛒
+                  </button>
+                </div>
+                
+                
               </div>
             </div>
           </div>
@@ -209,5 +222,102 @@
       </div>
     </div>
   </section>
+  <script>
+    // Initialiser un panier vide dans localStorage si besoin
+    if (!localStorage.getItem('panier')) {
+      localStorage.setItem('panier', JSON.stringify([]));
+    }
+  
+    // Ajouter un produit complet (id, nom, prix, image) au panier
+    function ajouterAuPanier(productId, productName, productPrice, productImage) {
+  let panier = JSON.parse(localStorage.getItem('panier')) || [];
+
+  let produitExistant = panier.find(item => item.id === productId);
+
+  if (produitExistant) {
+    // S'il existe déjà, augmente juste la quantité
+    produitExistant.quantite += 1;
+  } else {
+    // Sinon, ajoute avec quantité 1
+    panier.push({
+      id: productId,
+      name: productName,
+      price: parseFloat(productPrice),
+      image: productImage,
+      quantite: 1
+    });
+  }
+
+  localStorage.setItem('panier', JSON.stringify(panier));
+  alert('Produit ajouté au panier 🛒');
+}
+
+  
+    // Afficher le panier
+    function afficherPanier() {
+  let panier = JSON.parse(localStorage.getItem('panier')) || [];
+  let contenu = "";
+  let total = 0;
+
+  if (panier.length === 0) {
+    contenu = "<h2>Votre panier est vide.</h2>";
+  } else {
+    contenu = `
+      <table class="table table-hover" style="color: white; font-size: 18px;">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nom</th>
+            <th>Prix unitaire</th>
+            <th>Quantité</th>
+            <th>Image</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    panier.forEach((produit, index) => {
+      total += produit.price * produit.quantite;
+      contenu += `
+        <tr>
+          <th scope="row">${index + 1}</th>
+          <td>${produit.name}</td>
+          <td>$${produit.price.toFixed(2)}</td>
+          <td>${produit.quantite}</td>
+          <td><img class="img-fluid" src="${produit.image}" style="width: 60px;"></td>
+        </tr>
+      `;
+    });
+    contenu += `
+        </tbody>
+      </table>
+      <h3 style="margin-top: 20px;">🛒 Total : $${total.toFixed(2)} pour ${panier.length} article(s)</h3>
+    `;
+  }
+  document.getElementById('contenu-panier').innerHTML = contenu;
+}
+
+  
+    // Important : Appeler afficherPanier() automatiquement sur la page du panier
+    if (document.getElementById('contenu-panier')) {
+      afficherPanier();
+    }
+  </script>
+  
   {% endblock %}
 </div>
+<script>
+  // Liste des favoris en mémoire
+  let favoris = [];
+
+  // Fonction pour ajouter un produit aux favoris
+  function markFavourite(productId) {
+    // Chercher si l'article est déjà dans les favoris
+    if (!favoris.includes(productId)) {
+      favoris.push(productId);
+      alert('Article ajouté aux favoris !');
+      console.log(favoris); // Pour debug dans la console navigateur
+    } else {
+      alert('Cet article est déjà dans vos favoris.');
+    }
+  }
+</script>
