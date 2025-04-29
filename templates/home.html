@@ -85,7 +85,11 @@
               alt="{{ product.name }}"
             />
             <h6 style="text-align: center">$ {{ product.price }}</h6>
-            
+          </div>
+          <div style="text-align: center; margin-top: 10px;">
+            <button onclick="ajouterAuPanier('{{ product.id }}', '{{ product.name|escapejs }}', '{{ product.price|escapejs }}', '{{ product.image.url }}')" class="btn btn-success">
+              Ajouter au panier 🛒
+            </button>
           </div>
         </div>
         {% endfor %}
