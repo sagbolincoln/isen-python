@@ -11,26 +11,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Récupérer le code
-      uses: actions/checkout@v4
+      - name: Récupérer le code
+        uses: actions/checkout@v3
 
-    - name: Installer Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+      - name: Installer Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-    - name: Installer les dépendances
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest
+      - name: Installer les dépendances
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: Lancer les tests unitaires
-      run: |
-        echo "==== TESTS UNITAIRES ===="
-        pytest unit_tests/
+      - name: Lancer les tests unitaires
+        run: |
+          echo "==== TESTS UNITAIRES ===="
+          pytest unit_tests/ --maxfail=1 --disable-warnings -q
 
-    - name: Lancer les tests d'intégration
-      run: |
-        echo "==== TESTS D'INTÉGRATION ===="
-        pytest integration_tests/
+      - name: Lancer les tests d'intégration
+        run: |
+          echo "==== TESTS D'INTÉGRATION ===="
+          pytest integration_tests/ --maxfail=1 --disable-warnings -q
