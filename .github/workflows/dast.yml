@@ -1,51 +1,52 @@
 name: 🔍 DAST OWASP ZAP Baseline
 
-# 1 minute de scan dès qu’on pousse sur main
 on:
-    push:
-      branches: [ main, lincoln ]
-    pull_request:
-      branches: [ main, lincoln ]
+    
+  push:
+    branches: [ main, lincoln ]
+  pull_request:
+    branches: [ main, lincoln ]
+
 jobs:
   dast:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Build Docker image
-      run: docker build -t my-python-app:latest .
+      - name: Build Docker image
+        run: docker build -t my-python-app:latest .
 
-    - name: Start application container
-      run: docker run -d --name app -p 8080:8080 my-python-app:latest
+      - name: Start application container
+        run: docker run -d --name app -p 8080:8080 my-python-app:latest
 
-    - name: Wait for application to be ready
-      run: |
-        for i in {1..15}; do
-          if curl -s http://localhost:8080 >/dev/null; then
-            echo "App is up!"; break
-          fi
-          echo "Waiting for app…"; sleep 2
-        done
+      - name: Wait for application to be ready
+        run: |
+          for i in {1..15}; do
+            if curl -s http://localhost:8080 >/dev/null; then
+              echo "App is up!"; break
+            fi
+            echo "Waiting for app…"; sleep 2
+          done
 
-    - name: Run OWASP ZAP baseline scan
-      uses: zaproxy/action-baseline@v0.6.1
-      with:
-        # scanne le conteneur démarré en local
-        target: http://localhost:8080
-        format: 'json'          # rapport JSON
-        failThreshold: MEDIUM   # échoue si >= MEDIUM
-      env:
-        ZAP_BASELINE_TIMEOUT: 60   # timeout global du scan (secondes)
+      - name: Run OWASP ZAP baseline scan
+        uses: zaproxy/action-baseline@v0.6.1
+        with:
+          target: http://localhost:8080
+          format: 'json'
+          reportFileName: 'zap_report.json'   # ← Génère ce fichier pour l’upload
+          failThreshold: MEDIUM
+        env:
+          ZAP_BASELINE_TIMEOUT: 60
 
-    - name: Upload ZAP report
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: zap-baseline-report
-        path: zap_report.json
+      - name: Upload ZAP report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-baseline-report
+          path: zap_report.json               # ← Doit correspondre à reportFileName
 
-    - name: Stop application container
-      if: always()
-      run: docker stop app
+      - name: Stop application container
+        if: always()
+        run: docker stop app
